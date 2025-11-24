@@ -1,0 +1,771 @@
+/* style.css - v3.1 (Menu Retrátil) */
+
+:root {
+    --cor-primaria: #005A9C;
+    --cor-secundaria: #003D6A;
+    --cor-sucesso: #28a745;
+    --cor-perigo: #dc3545;
+    --cor-aviso: #ffc107;
+    --cor-fundo-app: #f4f7f6;
+    --cor-fundo-widget: #ffffff;
+    --cor-borda-suave: #e9ecef;
+    --cor-texto: #343a40;
+    --cor-texto-secundario: #6c757d;
+    --sidebar-bg: #212529;
+    --sidebar-link: #adb5bd;
+    --sidebar-link-hover: #ffffff;
+    --sombra-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+    
+    /* MUDANÇA: Definimos as larguras do menu */
+    --sidebar-width-expanded: 260px;
+    --sidebar-width-collapsed: 80px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cor-fundo-app);
+    color: var(--cor-texto);
+    margin: 0;
+    line-height: 1.6;
+    overflow-x: hidden; /* Impede scroll horizontal */
+}
+
+/* --- Layout Principal (MUDANÇA: Usando CSS Grid) --- */
+.app-container {
+    display: grid;
+    /* O menu começa largo (expanded) */
+    grid-template-columns: var(--sidebar-width-expanded) 1fr;
+    min-height: 100vh;
+    /* Transição suave para o conteúdo principal */
+    transition: grid-template-columns 0.3s ease;
+}
+
+/* --- 1. Sidebar (Menu Lateral) --- */
+.sidebar {
+    grid-column: 1 / 2;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-link);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    z-index: 10;
+    /* Impede que o texto "quebre" durante a transição */
+    overflow-x: hidden;
+    transition: width 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 1.5em;
+    text-align: center;
+    background-color: rgba(0,0,0,0.2);
+    /* MUDANÇA: Header agora é flex para alinhar o botão */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sidebar-header h2 {
+    margin: 0;
+    color: var(--cor-texto-claro);
+    font-weight: 500;
+    font-size: 1.2em;
+    white-space: nowrap; /* Impede quebra de linha */
+}
+
+/* MUDANÇA: Estilo do botão 'hamburger' */
+.btn-toggle {
+    font-size: 1.2em;
+    color: var(--sidebar-link);
+    padding: 0.2em 0.5em;
+}
+.btn-toggle:hover {
+    color: var(--sidebar-link-hover);
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 1em 0;
+}
+
+/* MUDANÇA: Links com ícone + texto */
+.sidebar li a.nav-link {
+    display: flex; /* Alinha ícone e texto */
+    align-items: center;
+    gap: 1em; /* Espaço entre ícone e texto */
+    padding: 1em 1.5em;
+    color: var(--sidebar-link);
+    text-decoration: none;
+    font-weight: 400;
+    margin: 0.3em 1em;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap; /* Impede quebra de linha */
+}
+.sidebar li a.nav-link i {
+    font-size: 1.1em;
+    width: 20px; /* Largura fixa para o ícone */
+    text-align: center;
+}
+.sidebar li a.nav-link span {
+    font-size: 0.95em;
+}
+
+.sidebar li a.nav-link:hover {
+    background-color: var(--cor-primaria);
+    color: var(--sidebar-link-hover);
+}
+.sidebar li a.nav-link.active {
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto-claro);
+    font-weight: 500;
+}
+
+/* --- 2. Conteúdo Principal --- */
+.main-content {
+    grid-column: 2 / 3;
+    padding: 2.5em;
+    overflow-y: auto;
+}
+
+/* * ============================================
+ * A MÁGICA: ESTADO RECOLHIDO (COLLAPSED)
+ * ============================================
+ */
+.app-container.sidebar-collapsed {
+    /* Muda o grid: menu fica estreito, conteúdo (1fr) expande */
+    grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+}
+
+.app-container.sidebar-collapsed .sidebar-header {
+    justify-content: center; /* Centraliza o hamburger */
+}
+.app-container.sidebar-collapsed .sidebar-header h2 {
+    display: none; /* Esconde o título "Gestão SP" */
+}
+
+.app-container.sidebar-collapsed .nav-link {
+    padding: 1em;
+    justify-content: center; /* Centraliza o ícone */
+}
+.app-container.sidebar-collapsed .nav-link span {
+    display: none; /* Esconde o TEXTO do link */
+}
+.app-container.sidebar-collapsed .nav-link i {
+    font-size: 1.3em; /* Ícone fica um pouco maior */
+}
+
+/* --- (Resto do CSS não muda) --- */
+/* ... (Cole todo o resto do seu style.css aqui) ... */
+
+/* --- Sistema de Páginas (Mostrar/Esconder) --- */
+.page-content { display: none; animation: fadeIn 0.4s ease-out; }
+.page-content.active { display: block; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Estilos dos Títulos --- */
+.page-content h1, .page-content h2 {
+    margin-top: 0;
+    font-weight: 700;
+    color: var(--cor-texto);
+    border-bottom: 2px solid var(--cor-borda-suave);
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+}
+.page-content h1 { font-size: 2em; }
+.page-content h2 { font-size: 1.5em; }
+
+/* --- Estilos do Formulário --- */
+form {
+    max-width: 800px;
+    background: var(--cor-fundo-widget);
+    padding: 2em 2.5em;
+    border-radius: 8px;
+    box-shadow: var(--sombra-card);
+    display: flex;
+    flex-direction: column;
+    gap: 1.4em;
+}
+label { 
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+    font-size: 0.9em;
+}
+input[type="text"], input[type="email"], input[type="date"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 0.8em;
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: 5px;
+    box-sizing: border-box; 
+    background-color: var(--cor-fundo-app);
+    color: var(--cor-texto);
+    font-size: 1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    background-color: var(--cor-fundo-widget);
+    box-shadow: 0 0 0 3px rgba(0,90,156,0.2);
+}
+.input-group { display: flex; gap: 1em; flex-wrap: wrap; }
+.input-group > div { flex: 1; min-width: 200px; }
+
+.botoes-form { display: flex; gap: 1em; margin-top: 1em; }
+
+/* Botão Principal */
+button, .btn-secundario {
+    background-color: var(--cor-primaria);
+    color: white;
+    padding: 0.8em 1.5em;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+button:hover, .btn-secundario:hover {
+    background-color: var(--cor-secundaria);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+.btn-secundario { background-color: var(--cor-texto-secundario); }
+.btn-secundario:hover { background-color: #5a6268; }
+
+/* --- Estilos da Tabela --- */
+.tabela-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--cor-fundo-widget);
+    border-radius: 8px;
+    box-shadow: var(--sombra-card);
+}
+#tabela-unidades {
+    width: 100%;
+    border-collapse: collapse;
+}
+#tabela-unidades th, #tabela-unidades td {
+    padding: 1em 1.2em;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda-suave);
+}
+#tabela-unidades th {
+    background-color: #fcfcfc;
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+    font-size: 0.85em;
+    text-transform: uppercase;
+}
+#tabela-unidades tr:last-child td { border-bottom: none; }
+#tabela-unidades tr:hover { background-color: #f8f9fa; }
+
+/* Estilizando os Botões de Ícone */
+.acoes { text-align: left; }
+.btn-acao {
+    background: none;
+    border: none;
+    padding: 0.5em;
+    margin-right: 0.2em;
+    color: var(--cor-texto-secundario);
+    font-size: 1.1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.2s, background-color 0.2s;
+}
+.btn-acao.btn-ver:hover { 
+    color: var(--cor-primaria); 
+    background-color: rgba(0,90,156,0.1);
+}
+.btn-acao.btn-editar:hover { 
+    color: var(--cor-aviso); 
+    background-color: rgba(255,193,7,0.1);
+}
+.btn-acao.btn-vistoriar { color: #17a2b8; }
+.btn-acao.btn-vistoriar:hover { 
+    color: #117a8b; 
+    background-color: rgba(23,162,184,0.1);
+}
+.btn-acao.btn-excluir:hover { 
+    color: var(--cor-perigo); 
+    background-color: rgba(220,53,69,0.1);
+}
+.btn-acao.btn-toggle {
+    color: var(--sidebar-link);
+}
+.btn-acao.btn-toggle:hover {
+    color: var(--sidebar-link-hover);
+    background-color: rgba(255,255,255,0.1);
+}
+
+
+/* Tags de Status */
+.status { padding: 0.3em 0.6em; border-radius: 12px; font-size: 0.85em; font-weight: 600; color: var(--cor-texto-claro); }
+.status-ativa { background-color: var(--cor-sucesso); }
+.status-inativa { background-color: var(--cor-perigo); }
+.status-em { background-color: var(--cor-aviso); color: var(--cor-texto); }
+
+/* --- Estilos do Modal --- */
+.hidden { display: none; }
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center;
+    align-items: center; z-index: 1000;
+}
+.modal-overlay.hidden { display: none; }
+.modal-conteudo {
+    background: var(--cor-fundo-widget); padding: 2.5em; border-radius: 8px;
+    width: 100%; max-width: 600px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative; animation: zoomIn 0.3s ease-out;
+}
+.fechar-modal {
+    position: absolute; top: 10px; right: 20px; font-size: 2.5em;
+    font-weight: 300; color: #aaa; background: none; border: none;
+    cursor: pointer; padding: 0; line-height: 1;
+}
+.fechar-modal:hover { color: #333; }
+.modal-conteudo pre { 
+    background-color: var(--cor-fundo-app); 
+    padding: 1em; 
+    border-radius: 4px; 
+    white-space: pre-wrap; 
+    font-family: inherit;
+    border: 1px solid var(--cor-borda-suave);
+}
+.modal-conteudo hr { border: 0; border-top: 1px solid var(--cor-borda-suave); margin: 1.5em 0; }
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* --- ESTILOS ADICIONAIS PARA PÁGINA DE VISTORIA --- */
+/* (O código da vistoria não muda) */
+.seletor-vistoria {
+    background: var(--cor-fundo-widget);
+    padding: 1.5em 2em;
+    border-radius: 8px;
+    box-shadow: var(--sombra-card);
+    margin-bottom: 2em;
+}
+.seletor-vistoria label {
+    font-weight: 500;
+    margin-right: 1em;
+    font-size: 1.1em;
+}
+#vistoria-select-unidade {
+    font-size: 1em;
+    padding: 0.5em;
+    border-radius: 5px;
+    border: 1px solid var(--cor-borda-suave);
+    min-width: 300px;
+}
+.info-box {
+    background: #e6f7ff;
+    border: 1px solid #b3e0ff;
+    color: #004085;
+    padding: 1.5em 2em;
+    border-radius: 8px;
+    margin-bottom: 2em;
+}
+.info-box h3 { margin-top: 0; color: #004085; }
+.info-box p { margin: 0.5em 0; }
+#form-vistoria { max-width: none; }
+fieldset {
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: 8px;
+    padding: 1.5em 2em;
+    margin-bottom: 1.5em;
+    background: #fdfdfd;
+}
+legend {
+    font-size: 1.2em;
+    font-weight: 500;
+    color: var(--cor-primaria);
+    padding: 0 0.5em;
+}
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: 1em;
+}
+.checkbox-group-inline {
+    display: flex;
+    align-items: center;
+    margin-top: 1em;
+    padding-top: 1.5em;
+}
+.checkbox-group input[type="checkbox"],
+.checkbox-group-inline input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.7em;
+    transform: scale(1.2);
+}
+.checkbox-group label,
+.checkbox-group-inline label {
+    font-weight: 400;
+    color: var(--cor-texto);
+    font-size: 1em;
+    margin-bottom: 0;
+}
+
+/* ... (estilos dos botões ver, editar, excluir) ... */
+
+.btn-acao.btn-vistoriar { 
+    color: #17a2b8; /* Um tom de ciano/azul claro */
+}
+.btn-acao.btn-vistoriar:hover { 
+    color: #117a8b; 
+    background-color: rgba(23,162,184,0.1);
+}
+/* style.css */
+/* ... (todo o seu CSS existente) ... */
+
+/* --- NOVO: ESTILOS DO HEADER PRINCIPAL --- */
+
+.main-header {
+    display: flex;
+    justify-content: space-between; /* Título na esquerda, pesquisa na direita */
+    align-items: center;
+    margin-bottom: 2em;
+    gap: 2em;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--cor-texto);
+    /* Remove a borda inferior que tínhamos */
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.main-header h1,
+.page-content h1,
+.page-content h2,
+legend,
+.app-title {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 700; /* Usa o peso "Bold" que importámos */
+}
+
+/* --- NOVO: ESTILOS DA PESQUISA GLOBAL (Discreta) --- */
+
+.search-container {
+    position: relative; /* Chave para o menu flutuante */
+    width: 100%;
+    max-width: 350px;
+}
+
+.search-container .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 1.2em;
+    transform: translateY(-50%);
+    color: var(--cor-texto-secundario);
+    font-size: 0.9em;
+    z-index: 1;
+}
+
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 0.8em 1em 0.8em 3em; /* Espaço à esquerda para o ícone */
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: 999px;
+    box-sizing: border-box; 
+    background-color: var(--cor-fundo-widget);
+    color: var(--cor-texto);
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+    box-shadow: none;
+}
+
+.search-container input[type="text"]:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+    background-color: var(--cor-fundo-widget);
+    box-shadow: 0 0 0 3px rgba(0,90,156,0.2), var(--sombra-card); /* Efeito de foco refinado */
+}
+
+/* --- NOVO: ESTILOS DO MENU DE PREVISÃO (Autocomplete) --- */
+
+.search-results-dropdown {
+    position: absolute;
+    top: 110%; /* Logo abaixo da barra */
+    left: 0;
+    width: 100%;
+    max-height: 400px; /* Limita a altura */
+    overflow-y: auto;
+    background: var(--cor-fundo-widget);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    z-index: 100;
+    border: 1px solid var(--cor-borda-suave);
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+.search-results-dropdown.hidden {
+    display: none;
+}
+
+.search-result-item {
+    display: block;
+    padding: 0.8em 1.2em;
+    color: var(--cor-texto);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+.search-result-item:hover {
+    background-color: var(--cor-fundo-app);
+    color: var(--cor-primaria);
+}
+
+.search-result-item .result-title {
+    font-weight: 500;
+    display: block;
+}
+.search-result-item .result-subtitle {
+    font-size: 0.85em;
+    color: var(--cor-texto-secundario);
+    display: block;
+}
+
+/* Caso não haja resultados */
+.search-no-results {
+    padding: 1em 1.2em;
+    color: var(--cor-texto-secundario);
+    font-style: italic;
+}
+
+/* style.css */
+/* ... (todo o seu CSS existente) ... */
+
+/* --- NOVO: ESTILOS DO LOGO E TÍTULO NO HEADER DA SIDEBAR --- */
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Para empurrar o botão de toggle para a esquerda */
+    padding: 1.5em 1em; /* Ajustar padding conforme necessário */
+    background-color: var(--cor-fundo-sidebar); /* Garantir que o fundo é o da sidebar */
+    border-bottom: 1px solid var(--cor-borda-sidebar);
+}
+
+.sidebar-header .logo-area {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Permite que ocupe o espaço restante */
+    padding-left: 0.5em; /* Pequeno espaçamento para o conteúdo */
+}
+
+.sidebar-header .app-logo {
+    height: 40px; /* Ajuste a altura conforme o tamanho desejado do seu logo */
+    width: auto; /* Mantém a proporção */
+    margin-right: 1em; /* Espaço entre o logo e o título */
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar-header .app-title {
+    font-size: 1.3em; /* Tamanho do texto do título */
+    font-weight: 700;
+    color: var(--cor-texto-claro); /* Cor do texto no sidebar */
+    white-space: nowrap; /* Evita que o texto quebre em várias linhas */
+    overflow: hidden; /* Esconde o excesso se o menu encolher */
+    text-overflow: ellipsis; /* Adiciona "..." se o texto for cortado */
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* --- Quando a sidebar está recolhida --- */
+
+.sidebar-collapsed .sidebar-header .logo-area {
+    /* Simplesmente esconde toda a área do logo (imagem + texto) */
+    display: none; 
+}
+
+.sidebar-collapsed .sidebar-header {
+    /* Centraliza o que sobrou (o botão 'hamburger') */
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-header .btn-toggle {
+    margin-right: 0; /* Remove a margem do botão */
+}
+
+/* style.css */
+/* ... (todo o código anterior) ... */
+
+/* --- ESTILOS DO DASHBOARD (HOME) --- */
+
+.dashboard-welcome {
+    margin-bottom: 2em;
+}
+.dashboard-welcome h2 {
+    border: none;
+    margin-bottom: 0.2em;
+    font-size: 1.8em;
+}
+.dashboard-welcome p {
+    color: var(--cor-texto-secundario);
+    margin-top: 0;
+}
+
+/* Grid dos Cartões */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsivo! */
+    gap: 1.5em;
+}
+
+/* O Cartão Individual */
+.card {
+    background: var(--cor-fundo-widget);
+    padding: 1.5em;
+    border-radius: 12px; /* Mais arredondado */
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--cor-borda-suave);
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Sobe um pouco ao passar o mouse */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Ícones Coloridos */
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+.icon-blue { background-color: #e3f2fd; color: #2196f3; }
+.icon-green { background-color: #e8f5e9; color: #4caf50; }
+.icon-purple { background-color: #f3e5f5; color: #9c27b0; }
+.icon-red { background-color: #ffebee; color: #f44336; }
+
+/* Texto do Cartão */
+.card-info h3 {
+    margin: 0;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: var(--cor-texto-secundario);
+    font-family: 'Inter', sans-serif; /* Títulos dos cards ficam melhores em Inter */
+}
+
+.card-info p {
+    margin: 0.2em 0 0 0;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--cor-texto);
+    font-family: 'Poppins', sans-serif; /* Números em Poppins ficam ótimos */
+}
+/* style.css */
+
+/* --- GRÁFICOS DO DASHBOARD --- */
+
+.dashboard-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Responsivo */
+    gap: 2em;
+    margin-top: 2.5em;
+}
+
+.chart-container {
+    background: var(--cor-fundo-widget);
+    padding: 2em;
+    border-radius: 12px;
+    box-shadow: var(--sombra-card);
+    border: 1px solid var(--cor-borda-suave);
+    /* Altura fixa para garantir que os gráficos ficam iguais */
+    height: 400px; 
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-container h3 {
+    margin-top: 0;
+    margin-bottom: 1.5em;
+    color: var(--cor-texto);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+}
+
+/* Ajuste para o canvas ocupar o espaço restante */
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 300px;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2em;
+}
+
+.btn-imprimir {
+    background-color: #6c757d; /* Cinza escuro */
+    color: white;
+    font-size: 1em;
+    padding: 0.8em 1.5em;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.btn-imprimir:hover {
+    background-color: #495057;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* --- MODO DE IMPRESSÃO (O Segredo do PDF) --- */
+@media print {
+    /* Esconde tudo o que não é relatório */
+    .sidebar, 
+    .main-header, 
+    .btn-imprimir,
+    .nav-link,
+    #sidebar-toggle {
+        display: none !important;
+    }
+
+    /* Ajusta o layout para papel */
+    body, .app-container, .main-content {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+        display: block; /* Remove o grid */
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Força a página de relatórios a aparecer, mesmo se estiver oculta */
+    #page-relatorios {
+        display: block !important;
+    }
+
+    /* Ajusta os gráficos para caberem na folha A4 */
+    .dashboard-charts {
+        display: block; /* Um em cima do outro no papel */
+        page-break-inside: avoid;
+    }
+
+    .chart-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 2em;
+        page-break-inside: avoid; /* Tenta não cortar o gráfico no meio da página */
+    }
+}

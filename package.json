@@ -1,0 +1,36 @@
+{
+  "name": "sistema-telecentro-offline",
+  "version": "1.0.0",
+  "description": "Sistema de Gerenciamento Telecentro",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "dist": "electron-builder"
+  },
+  "author": "Telecentro",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite3": "5.1.6"
+  },
+  "devDependencies": {
+    "electron": "22.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.telecentro.gerenciamento",
+    "productName": "Gerenciador Telecentro",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "logo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  }
+}

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Telecentros</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <div id="login-overlay" class="hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; justify-content:center; align-items:center;">
+        <div style="background:white; padding:40px; border-radius:10px; width:350px; text-align:center;">
+        
+            <h2 style="margin-bottom:20px;">Permissão Necessária</h2>
+            <p style="margin-bottom:20px; color:#666;">Para editar ou excluir dados, identifique-se.</p>
+        
+            <input type="text" id="login-user" placeholder="Usuário (admin)" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="password" id="login-pass" placeholder="Senha (1234)" style="width:100%; padding:10px; margin-bottom:20px;">
+        
+            <button onclick="fazerLogin()" style="width:100%; padding:10px; background:#005A9C; color:white; border:none; margin-bottom:10px; cursor:pointer;">CONFIRMAR</button>
+        
+            <button onclick="fecharLogin()" style="width:100%; padding:10px; background:#ccc; border:none; cursor:pointer;">Cancelar</button>
+        
+            <p id="login-msg" style="color:red; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <div class="app-container sidebar-collapsed">
+
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <button id="sidebar-toggle" class="btn-acao btn-toggle" title="Recolher menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <div class="logo-area">
+                    <img src="./assets/logo-telecentro-colorido.png" alt="Logo da Aplicação" class="app-logo">
+                    <span class="app-title"></span>
+                </div>
+            </div>
+            
+            <ul>
+                <li>
+                    <a href="#" class="nav-link active" data-page="home">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-page="consulta">
+                        <i class="fa-solid fa-table-list"></i>
+                        <span>Consultar Unidades</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-page="cadastro">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Cadastrar Unidade</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-page="vistoria">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <span>Dados de Vistoria</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" data-page="relatorios">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Relatórios e Gráficos</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            
+            <header class="main-header">
+                <h1 id="main-header-title">Home</h1>
+                
+                <div class="search-container">
+                    <i class="fa-solid fa-search search-icon"></i>
+                    <input type="text" id="global-search-input" placeholder="Procurar unidade...">
+                    
+                    <div class="search-results-dropdown hidden" id="search-results">
+                    </div>
+                </div>
+            </header>
+            
+            <section id="page-home" class="page-content active">
+                <div class="dashboard-welcome">
+                    <h2>Visão Geral</h2>
+                    <p>Acompanhe os indicadores da rede de Telecentros.</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon icon-blue"><i class="fa-solid fa-building"></i></div>
+                        <div class="card-info"><h3>Total de Unidades</h3><p id="dash-total-unidades">--</p></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon icon-green"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="card-info"><h3>Unidades Ativas</h3><p id="dash-unidades-ativas">--</p></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon icon-purple"><i class="fa-solid fa-desktop"></i></div>
+                        <div class="card-info"><h3>Computadores em Uso</h3><p id="dash-total-cpus">--</p></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="card-info"><h3>Chamados Abertos</h3><p id="dash-chamados">--</p></div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section id="page-relatorios" class="page-content">
+                <div class="report-header">
+                    <p>Análise visual e impressão de dados.</p>
+                    <button onclick="window.print()" class="btn-acao btn-imprimir">
+                        <i class="fa-solid fa-print"></i> Imprimir Relatório / Salvar PDF
+                    </button>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h3>Unidades por Zona</h3>
+                        <canvas id="graficoZona"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Status da Rede</h3>
+                        <canvas id="graficoStatus"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-consulta" class="page-content">
+                <div class="tabela-wrapper">
+                    <table id="tabela-unidades">
+                        <thead>
+                            <tr>
+                                <th>Nome da Unidade</th>
+                                <th>Zona</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpo-tabela">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="page-cadastro" class="page-content">
+                <h2 id="form-titulo">Cadastrar Nova Unidade</h2>
+                <p id="form-descricao">Preencha os dados abaixo.</p>
+                <form id="form-cadastro">
+                    <input type="hidden" id="unidade_id">
+                    
+                    <label for="nome_unidade">Nome da Unidade:</label>
+                    <input type="text" id="nome_unidade" required>
+                    
+                    <label for="endereco">Endereço:</label>
+                    <input type="text" id="endereco">
+                    
+                    <div class="input-group">
+                        <div>
+                            <label for="bairro">Bairro:</label>
+                            <input type="text" id="bairro">
+                        </div>
+                        <div>
+                            <label for="zona">Zona:</label>
+                            <input type="text" id="zona">
+                        </div>
+                    </div>
+                    
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" id="telefone">
+                    
+                    <label for="nome_responsavel">Nome do Responsável:</label>
+                    <input type="text" id="nome_responsavel">
+
+                    <label for="email_responsavel">Email do Responsável:</label>
+                    <input type="email" id="email_responsavel">
+                    
+                    <label for="status_unidade">Status:</label>
+                    <select id="status_unidade">
+                        <option value="Ativa">Ativa</option>
+                        <option value="Inativa">Inativa</option>
+                        <option value="Em Manutenção">Em Manutenção</option>
+                    </select>
+                    
+                    <label for="observacoes">Observações:</label>
+                    <textarea id="observacoes" rows="3"></textarea>
+                    
+                    <div class="botoes-form">
+                        <button type="submit" id="btn-salvar">Salvar Unidade</button>
+                        <button type="button" id="btn-cancelar" class="btn-secundario hidden">Cancelar Edição</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="page-vistoria" class="page-content">
+                <h2>Dados de Vistoria</h2>
+                
+                <div id="vistoria-conteudo">
+                    
+                    <div id="vistoria-dados-responsavel" class="info-box">
+                        <h3>Informações da Unidade</h3>
+                        <p><strong>Responsável:</strong> <span id="info-resp-nome">--</span></p>
+                        <p><strong>Telefone:</strong> <span id="info-resp-tel">--</span></p>
+                        <p><strong>Email:</strong> <span id="info-resp-email">--</span></p>
+                    </div>
+
+                    <form id="form-vistoria">
+                        <input type="hidden" id="vistoria-id-unidade-hidden">
+                        
+                        <fieldset>
+                            <legend>Informações Gerais</legend>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-ultimo-visitante">Último Visitante:</label>
+                                    <input type="text" id="vistoria-ultimo-visitante">
+                                </div>
+                                <div>
+                                    <label for="vistoria-ultima-visita">Data da Última Visita:</label>
+                                    <input type="date" id="vistoria-ultima-visita">
+                                </div>
+                            </div>
+                            <label for="vistoria-telefone-agentes">Telefone dos Agentes:</label>
+                            <input type="text" id="vistoria-telefone-agentes">
+                            <label for="vistoria-nota-excelencia">Nota de Excelência:</label>
+                            <input type="text" id="vistoria-nota-excelencia">
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Conectividade</legend>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-estado-internet">Estado da Internet:</label>
+                                    <input type="text" id="vistoria-estado-internet">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-pontos-wifi">Qtd. Pontos Wi-Fi:</label>
+                                    <input type="number" id="vistoria-qtd-pontos-wifi" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-wifi-ok">
+                                <label for="vistoria-wifi-ok">O Wi-Fi funciona adequadamente?</label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Equipamentos</legend>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-cpus-uso">CPUs em Uso:</label>
+                                    <input type="number" id="vistoria-qtd-cpus-uso" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-cpus-sem-uso">CPUs Sem Uso:</label>
+                                    <input type="number" id="vistoria-qtd-cpus-sem-uso" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-monitores-total">Monitores (Total):</label>
+                                    <input type="number" id="vistoria-qtd-monitores-total" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-teclados-total">Teclados (Total):</label>
+                                    <input type="number" id="vistoria-qtd-teclados-total" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-mouses-total">Mouses (Total):</label>
+                                    <input type="number" id="vistoria-qtd-mouses-total" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-notebooks-uso">Notebooks em Uso:</label>
+                                    <input type="number" id="vistoria-qtd-notebooks-uso" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-webcams">Webcams:</label>
+                                    <input type="number" id="vistoria-qtd-webcams" min="0" value="0">
+                                </div>
+                            </div>
+                            <label for="vistoria-hardware-cpu">Hardware das CPUs:</label>
+                            <textarea id="vistoria-hardware-cpu" rows="3"></textarea>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-impressora-ok">
+                                <label for="vistoria-impressora-ok">A impressora funciona?</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-chamados-abertos">
+                                <label for="vistoria-chamados-abertos">Há chamados técnicos em aberto?</label>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Mobília e Infraestrutura</legend>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-mesas">Mesas:</label>
+                                    <input type="number" id="vistoria-qtd-mesas" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-cadeiras">Cadeiras:</label>
+                                    <input type="number" id="vistoria-qtd-cadeiras" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-armarios-baixos">Armários Baixos:</label>
+                                    <input type="number" id="vistoria-qtd-armarios-baixos" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label for="vistoria-qtd-armarios-altos">Armários Altos:</label>
+                                    <input type="number" id="vistoria-qtd-armarios-altos" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div>
+                                    <label for="vistoria-qtd-ventiladores">Ventiladores:</label>
+                                    <input type="number" id="vistoria-qtd-ventiladores" min="0" value="0">
+                                </div>
+                                <div class="checkbox-group-inline">
+                                    <input type="checkbox" id="vistoria-possui-tv">
+                                    <label for="vistoria-possui-tv">Possui TV?</label>
+                                </div>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-controle-remoto-ok">
+                                <label for="vistoria-controle-remoto-ok">O controle remoto funciona?</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-possui-bebedouro">
+                                <label for="vistoria-possui-bebedouro">Há bebedouro?</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-possui-extintor">
+                                <label for="vistoria-possui-extintor">Há extintor de incêndio?</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="vistoria-lampadas-ok">
+                                <label for="vistoria-lampadas-ok">As lâmpadas funcionam adequadamente?</label>
+                            </div>
+                        </fieldset>
+
+                        <div class="botoes-form">
+                            <button type="submit">Salvar Dados da Vistoria</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div> 
+    
+    <div id="detalhe-modal" class="modal-overlay hidden">
+         <div class="modal-conteudo">
+            <button id="fechar-modal" class="fechar-modal">&times;</button>
+            <h2 id="modal-nome"></h2>
+            
+            <p><strong>Status:</strong> <span id="modal-status"></span></p>
+            <p><strong>Responsável:</strong> <span id="modal-responsavel"></span></p>
+            <p><strong>Email:</strong> <span id="modal-email"></span></p>
+            <p><strong>Telefone:</strong> <span id="modal-telefone"></span></p>
+            <hr>
+            <p><strong>Endereço:</strong> <span id="modal-endereco"></span></p>
+            <p><strong>Bairro:</strong> <span id="modal-bairro"></span></p>
+            <p><strong>Zona:</strong> <span id="modal-zona"></span></p>
+            <hr>
+            <p><strong>Observações:</strong></p>
+            <pre id="modal-obs"></pre>
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+
+</body>
+</html>
